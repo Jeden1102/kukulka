@@ -1,6 +1,5 @@
 <template>
   <div class="auth-wrapper auth-v1">
-    {{ userStore.user }}
     <div class="auth-inner">
       <v-card class="auth-card">
         <!-- logo -->
