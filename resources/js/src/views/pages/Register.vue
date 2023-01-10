@@ -1,5 +1,6 @@
 <template>
   <div class="auth-wrapper auth-v1">
+    {{ userStore.user }}
     <div class="auth-inner">
       <v-card class="auth-card">
         <!-- logo -->
@@ -88,6 +89,7 @@
 import { mdiFacebook, mdiTwitter, mdiGithub, mdiGoogle, mdiEyeOutline, mdiEyeOffOutline } from '@mdi/js'
 import { ref } from '@vue/composition-api'
 import axios from 'axios';
+import { useUserStore } from '../../store/user';
 export default {
   setup() {
     const isPasswordVisible = ref(false)
@@ -95,6 +97,7 @@ export default {
     const email = ref('')
     const password = ref('')
     const error = ref('')
+    const userStore= useUserStore()
     async function registerUser() {
       this.processing = true
       const user = {
@@ -108,7 +111,10 @@ export default {
       }
       axios.post('/api/register', user).then(res=>{
         error.value = '';
-        console.log(res.data)
+        userStore.user = res.data.user
+        localStorage.removeItem('user')
+        localStorage.setItem('user', JSON.stringify(res.data.token))
+        document.location.href = '/';
       }).catch(err=>{
         error.value = err.response.data;
         this.processing = false
@@ -121,6 +127,7 @@ export default {
       password,
       registerUser,
       error,
+      userStore,
       icons: {
         mdiEyeOutline,
         mdiEyeOffOutline,

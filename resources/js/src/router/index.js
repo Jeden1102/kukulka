@@ -5,7 +5,7 @@ Vue.use(VueRouter)
 
 const routes = [{
         path: '/',
-        redirect: '/pages/login',
+        redirect: 'dashboard',
     },
     {
         path: '/dashboard',

@@ -40,8 +40,12 @@ class AuthController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
+                'remember_token' => Hash::make($request->email),
             ]);
-            return $user;
+            return [
+                'user' => $user,
+                'token' => Hash::make($request->email),
+            ];
         }else{
             return response()->json('Wystąpił błąd. Wymagane pole/a nieuzupełnione.', 422);
         }
