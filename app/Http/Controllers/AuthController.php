@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+
 class AuthController extends Controller
 {
     /**
@@ -35,20 +36,68 @@ class AuthController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->email && $request->name && $request->password){
-           $user =  User::create([
+        if ($request->email && $request->name && $request->password) {
+            if (count(User::where('email', "=", $request->email)->get()) > 0 || count(User::where('name', "=", $request->name)->get()) > 0) {
+                return response()->json('Wystąpił błąd. Użytkownik o takim adresie e-mail lub loginie już istnieje.', 422);
+            }
+            $token = substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(24 / strlen($x)))), 1, 24);
+            $user =  User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'remember_token' => Hash::make($request->email),
+                'remember_token' => $token,
             ]);
             return [
                 'user' => $user,
-                'token' => Hash::make($request->email),
+                'token' => $token,
             ];
-        }else{
+        } else {
             return response()->json('Wystąpił błąd. Wymagane pole/a nieuzupełnione.', 422);
         }
+    }
+
+
+
+    /**
+     * User Login
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function login(Request $request)
+    {
+        if ($request->email && $request->password) {
+            if (count(User::where('email', "=", $request->email)->get()) == 0) {
+                return response()->json('Wystąpił błąd. Brak użytkownika o takim adresie e-mail.', 422);
+            }
+            $user = User::where('email', "=", $request->email)->get();
+            if (Hash::check($request->password, $user[0]->password)) {
+                $token = substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(24 / strlen($x)))), 1, 24);
+                User::where('email', "=", $request->email)->update([
+                    'remember_token' => $token,
+                ]);
+                return [
+                    'user' => User::where('email', "=", $request->email)->get(),
+                    'token' => $token,
+                ];
+            } else {
+                return response()->json('Wystąpił błąd. Nieprawidłowe hasło.', 422);
+            }
+        } else {
+            return response()->json('Wystąpił błąd. Wymagane pole/a nieuzupełnione.', 422);
+        }
+    }
+
+    public function logout(Request $request)
+    {
+        return  User::where('remember_token', "=", $request->remember_token)->update([
+            "remember_token" => "",
+        ]);
+    }
+
+    public function auth(Request $request)
+    {
+        return  User::where('remember_token', "=", $request->remember_token)->get() ?? '';
     }
 
     /**

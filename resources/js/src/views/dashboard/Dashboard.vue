@@ -8,6 +8,7 @@
 
 <script>
 
+import { useUserStore} from '../../store/user';
 import DashboardDatatable from './DashboardDatatable.vue'
 
 export default {
@@ -15,8 +16,9 @@ export default {
     DashboardDatatable,
   },
   setup() {
-    return {
-
+    const userStore = useUserStore();
+      return{
+        userStore
     }
   },
 }

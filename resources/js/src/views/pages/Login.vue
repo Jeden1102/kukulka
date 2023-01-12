@@ -54,7 +54,7 @@
               <a href="javascript:void(0)" class="mt-1"> Forgot Password? </a>-->
             </div>
 
-            <v-btn block color="primary" class="mt-6"> Login </v-btn>
+            <v-btn @click="loginUser" block color="primary" class="mt-6"> Login </v-btn>
           </v-form>
         </v-card-text>
 
@@ -63,7 +63,9 @@
           <span class="me-2"> New on our platform? </span>
           <router-link :to="{ name: 'pages-register' }"> Create an account </router-link>
         </v-card-text>
-
+        <VAlert v-if="error" color="warning">
+      {{ error }}
+    </VAlert>
         <!-- divider 
         <v-card-text class="d-flex align-center mt-2">
           <v-divider></v-divider>
@@ -106,41 +108,46 @@
 // eslint-disable-next-line object-curly-newline
 import { mdiFacebook, mdiTwitter, mdiGithub, mdiGoogle, mdiEyeOutline, mdiEyeOffOutline } from '@mdi/js'
 import { ref } from '@vue/composition-api'
-
+import axios from 'axios'
+import { useUserStore } from '../../store/user'
 export default {
   setup() {
     const isPasswordVisible = ref(false)
     const email = ref('')
     const password = ref('')
-    const socialLink = [
-      {
-        icon: mdiFacebook,
-        color: '#4267b2',
-        colorInDark: '#4267b2',
-      },
-      {
-        icon: mdiTwitter,
-        color: '#1da1f2',
-        colorInDark: '#1da1f2',
-      },
-      {
-        icon: mdiGithub,
-        color: '#272727',
-        colorInDark: '#fff',
-      },
-      {
-        icon: mdiGoogle,
-        color: '#db4437',
-        colorInDark: '#db4437',
-      },
-    ]
+    const error = ref('')
+    const userStore = useUserStore()
+
+    async function loginUser() {
+      this.processing = true
+      const user = {
+        email:email.value,
+        password:password.value,
+      }
+      if(!email.value || !password.value){
+        error.value = "Uzupełnij wszystkie pola!";
+        return;
+      }
+      axios.post('/api/login', user).then(res=>{
+        const data= res.data;
+        error.value = '';
+        userStore.user = data.user
+        localStorage.removeItem('user')
+        localStorage.setItem('user', data.token)
+        document.location.href = '/';
+      }).catch(err=>{
+        error.value = err.response.data;
+        this.processing = false
+      })
+    }
 
     return {
       isPasswordVisible,
       email,
       password,
-      socialLink,
-
+      loginUser,
+      error,
+      userStore,
       icons: {
         mdiEyeOutline,
         mdiEyeOffOutline,

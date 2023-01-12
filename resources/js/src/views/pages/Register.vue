@@ -106,13 +106,13 @@ export default {
       }
       if(!username.value || !email.value || !password.value){
         error.value = "Uzupełnij wszystkie pola!";
-        // return;
+        return;
       }
       axios.post('/api/register', user).then(res=>{
         error.value = '';
         userStore.user = res.data.user
         localStorage.removeItem('user')
-        localStorage.setItem('user', JSON.stringify(res.data.token))
+        localStorage.setItem('user', res.data.token)
         document.location.href = '/';
       }).catch(err=>{
         error.value = err.response.data;

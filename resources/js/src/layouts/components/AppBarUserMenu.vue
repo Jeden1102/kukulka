@@ -15,8 +15,8 @@
           </v-avatar>
         </v-badge>
         <div class="d-inline-flex flex-column justify-center ms-3" style="vertical-align: middle">
-          <span class="text--primary font-weight-semibold mb-n1"> John Doe </span>
-          <small class="text--disabled text-capitalize">Admin</small>
+          <span class="text--primary font-weight-semibold mb-n1"> {{ userStore.user[0].name }} </span>
+          <small class="text--disabled text-capitalize">{{ userStore.user[0].email }}</small>
         </div>
       </div>
 
@@ -29,7 +29,7 @@
           </v-icon>
         </v-list-item-icon>
         <v-list-item-content>
-          <v-list-item-title>Logout</v-list-item-title>
+          <v-list-item-title @click="logout">Logout</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -48,9 +48,19 @@ import {
   mdiLogoutVariant,
 } from '@mdi/js'
 
+import { useUserStore } from '../../store/user';
+import router from '../../router'
+
 export default {
   setup() {
+    const userStore = useUserStore();
+    function logout(){
+      localStorage.removeItem('user')
+      router.push({name:'pages-login'})
+    }
     return {
+      userStore,
+      logout,
       icons: {
         mdiAccountOutline,
         mdiEmailOutline,
@@ -60,6 +70,7 @@ export default {
         mdiCurrencyUsd,
         mdiHelpCircleOutline,
         mdiLogoutVariant,
+        userStore,
       },
     }
   },
