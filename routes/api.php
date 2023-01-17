@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,8 +20,15 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
+//AUTH
 
-Route::post('/register',[AuthController::class,'store']);
-Route::post('/login',[AuthController::class,'login']);
-Route::post('/logout',[AuthController::class,'logout']);
-Route::post('/auth',[AuthController::class,'auth']);
+Route::post('/register', [AuthController::class, 'store']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout']);
+Route::post('/auth', [AuthController::class, 'auth']);
+
+//USERS
+
+Route::get('/users', [UserController::class, 'index']);
+Route::post('/userEdit', [UserController::class, 'update']);
+Route::delete('/user/{id}', [UserController::class, 'destroy']);

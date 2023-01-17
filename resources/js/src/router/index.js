@@ -15,6 +15,12 @@ const routes = [{
             import ('@/views/dashboard/Dashboard.vue'),
     },
     {
+        path: '/users',
+        name: 'users',
+        component: () =>
+            import ('@/views/users/Users.vue'),
+    },
+    {
         path: '/pages/login',
         name: 'pages-login',
         component: () =>
@@ -59,7 +65,7 @@ router.beforeEach((to, from, next) => {
             router.push({ name: 'dashboard' })
         }
     }
-    if (to.name === 'dashboard') {
+    if (to.name === 'dashboard' || to.name === 'users') {
         if (localStorage.getItem('user') == null) {
             router.push({ name: 'pages-login' })
         }
