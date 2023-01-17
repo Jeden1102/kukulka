@@ -33,24 +33,28 @@
             </td>
             <td>
               <div v-if="user.active">
-                <VChip label color="success">
+                <VChip small class="font-weight-medium" label color="success">
                   Active
                 </VChip>
               </div>
               <div v-else>
-                <VChip label color="error">
+                <VChip small class="font-weight-medium" label color="error">
                   Distactive
                 </VChip>
               </div>
             </td>
             <td class="user-actions">
-              <VBtn color="success">
-                Activate
+              <VBtn @click="activateUser(user.id)" v-if="!user.active" color="success">
+                <span>
+                  Activate
+                </span>
               </VBtn>
-              <VBtn color="info">
-                Make root
+              <VBtn @click="makeRoot(user.id)" v-if="!user.root" color="info">
+                <span>
+                  Make root
+                </span>
               </VBtn>
-              <VBtn color="error">
+              <VBtn v-if="!user.root" @click="deleteUser(user.id)" color="error">
                 Delete
               </VBtn>
             </td>
@@ -70,7 +74,7 @@ import { useUserStore } from '../../store/user'
 import { onMounted } from 'vue-demi'
 import avatar2 from '../../assets/images/avatars/1.png'
 import avatar3 from '../../assets/images/avatars/2.png'
-
+import axios from 'axios'
 export default {
   setup() {
     const userStore = useUserStore()
@@ -85,6 +89,33 @@ export default {
       const year = newDate.getFullYear();
       return `${day} ${month} ${year}`
     }
+    function deleteUser(id) {
+      axios.delete(`api/user/${id}`).then(res => {
+        userStore.getUsers()
+      }).catch(err => {
+        console.log(err)
+      })
+    }
+    function activateUser(id) {
+      axios.post(`api/userEdit`, {
+        id: id,
+        active: 1,
+      }).then(res => {
+        userStore.getUsers()
+      }).catch(err => {
+        console.log(err)
+      })
+    }
+    function makeRoot(id) {
+      axios.post(`api/userEdit`, {
+        root: 1,
+        id: id
+      }).then(res => {
+        userStore.getUsers()
+      }).catch(err => {
+        console.log(err)
+      })
+    }
     onMounted(() => {
       userStore.getUsers()
     })
@@ -96,8 +127,11 @@ export default {
         1: 'Distactive',
       },
       statusColor,
+      deleteUser,
       userStore,
       formatDate,
+      activateUser,
+      makeRoot,
       avatar2,
       avatar3,
       // icons

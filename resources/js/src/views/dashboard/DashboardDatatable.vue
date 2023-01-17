@@ -1,72 +1,68 @@
 <template>
   <v-card>
-    <v-data-table
-      :headers="headers"
-      :items="usreList"
-      item-key="full_name"
-      class="table-rounded"
-      hide-default-footer
-      disable-sort
-    >
-      <!-- name -->
-      <template #[`item.full_name`]="{item}">
-        <div class="d-flex flex-column">
-          <span class="d-block font-weight-semibold text--primary text-truncate">{{ item.full_name }}</span>
-          <small>{{ item.post }}</small>
-        </div>
-      </template>
-      <template #[`item.salary`]="{item}">
-        {{ `$${item.salary}` }}
-      </template>
-      <!-- status -->
-      <template #[`item.status`]="{item}">
-        <v-chip
-          small
-          :color="statusColor[status[item.status]]"
-          class="font-weight-medium"
-        >
-          {{ status[item.status] }}
-        </v-chip>
-      </template>
-    </v-data-table>
+    <div class="table-wrapper">
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Source</th>
+            <th>Name</th>
+            <th>E-mail</th>
+            <th>Created</th>
+            <th>Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="order in ordersStore.orders">
+            <td>{{ order.order_id }}</td>
+            <td>{{ order.order_source }}</td>
+            <td>{{ order.delivery_fullname }}</td>
+            <td>{{ order.email }}</td>
+            <td>{{ formatDate(order.created_at) }}</td>
+            <td>{{ formatDate(order.updated_at) }}</td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+
   </v-card>
 </template>
 
 <script>
 import { mdiSquareEditOutline, mdiDotsVertical } from '@mdi/js'
-import data from './datatable-data'
-
+import { useOrdersStore } from '../../store/orders'
+import { onMounted } from 'vue-demi'
 export default {
   setup() {
+    const ordersStore = useOrdersStore()
     const statusColor = {
-      /* eslint-disable key-spacing */
-      Current: 'primary',
-      Professional: 'success',
-      Rejected: 'error',
-      Resigned: 'warning',
-      Applied: 'info',
-      /* eslint-enable key-spacing */
+      0: 'success',
+      1: 'error',
+    }
+    function formatDate(date) {
+      const newDate = new Date(date);
+      const month = newDate.toLocaleString('default', { month: 'short' });
+      const day = newDate.getDay();
+      const year = newDate.getFullYear();
+      return `${day} ${month} ${year}`
     }
 
+
+    onMounted(() => {
+      ordersStore.getOrders()
+    })
+
     return {
-      headers: [
-        { text: 'NAME', value: 'full_name' },
-        { text: 'EMAIL', value: 'email' },
-        { text: 'DATE', value: 'start_date' },
-        { text: 'SALARY', value: 'salary' },
-        { text: 'AGE', value: 'age' },
-        { text: 'STATUS', value: 'status' },
-      ],
-      usreList: data,
+
       status: {
-        1: 'Current',
-        2: 'Professional',
-        3: 'Rejected',
-        4: 'Resigned',
-        5: 'Applied',
+        0: 'Active',
+        1: 'Distactive',
       },
       statusColor,
-
+      ordersStore,
+      formatDate,
       // icons
       icons: {
         mdiSquareEditOutline,
@@ -76,3 +72,47 @@ export default {
   },
 }
 </script>
+<style>
+.table-wrapper {
+  overflow-x: scroll;
+}
+
+.styled-table {
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  min-width: 400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  min-width: 1000px;
+}
+
+.styled-table thead tr {
+  background-color: #009879;
+  color: #ffffff;
+  text-align: left;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 12px 15px;
+}
+
+.styled-table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+  border-bottom: 2px solid #009879;
+}
+
+.user-actions {
+  display: flex;
+  gap: 8px;
+}
+</style>
