@@ -8,6 +8,9 @@
             <th>Source</th>
             <th>Name</th>
             <th>E-mail</th>
+            <th>Confirmed</th>
+            <th>Add</th>
+            <th>In status</th>
             <th>Created</th>
             <th>Updated</th>
           </tr>
@@ -18,13 +21,16 @@
             <td>{{ order.order_source }}</td>
             <td>{{ order.delivery_fullname }}</td>
             <td>{{ order.email }}</td>
-            <td>{{ formatDate(order.created_at) }}</td>
-            <td>{{ formatDate(order.updated_at) }}</td>
+            <td>{{ formatDate(order.date_confirmed, true) }}</td>
+            <td>{{ formatDate(order.date_add, true) }}</td>
+            <td>{{ formatDate(order.date_in_status, true) }}</td>
+            <td>{{ formatDate(order.created_at, false) }}</td>
+            <td>{{ formatDate(order.updated_at, false) }}</td>
           </tr>
         </tbody>
 
       </table>
-
+      <VPagination v-model="ordersStore.current_page" :length="ordersStore.last_page" :total-visible="7" />
     </div>
 
   </v-card>
@@ -33,7 +39,8 @@
 <script>
 import { mdiSquareEditOutline, mdiDotsVertical } from '@mdi/js'
 import { useOrdersStore } from '../../store/orders'
-import { onMounted } from 'vue-demi'
+import { onMounted, watch } from 'vue-demi'
+
 export default {
   setup() {
     const ordersStore = useOrdersStore()
@@ -41,21 +48,21 @@ export default {
       0: 'success',
       1: 'error',
     }
-    function formatDate(date) {
-      const newDate = new Date(date);
+    function formatDate(date, unix) {
+      const newDate = new Date(unix ? date * 1000 : date);
       const month = newDate.toLocaleString('default', { month: 'short' });
       const day = newDate.getDay();
       const year = newDate.getFullYear();
       return `${day} ${month} ${year}`
     }
 
+    watch(() => ordersStore.current_page, (n) => console.log(ordersStore.getOrders(n)));
 
     onMounted(() => {
-      ordersStore.getOrders()
+      ordersStore.getOrders(1)
     })
 
     return {
-
       status: {
         0: 'Active',
         1: 'Distactive',

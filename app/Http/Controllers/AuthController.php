@@ -72,6 +72,9 @@ class AuthController extends Controller
             }
             $user = User::where('email', "=", $request->email)->get();
             if (Hash::check($request->password, $user[0]->password)) {
+                if (!$user[0]->active) {
+                    return response()->json('Wystąpił błąd. Twoje konto jest nieaktywne.', 422);
+                }
                 $token = substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(24 / strlen($x)))), 1, 24);
                 User::where('email', "=", $request->email)->update([
                     'remember_token' => $token,
@@ -97,7 +100,16 @@ class AuthController extends Controller
 
     public function auth(Request $request)
     {
-        return  User::where('remember_token', "=", $request->remember_token)->get() ?? '';
+        $user = User::where('remember_token', "=", $request->remember_token)->get();
+        if (!$user) {
+            return '';
+        } else {
+            if (!$user[0]->active) {
+                return '';
+            } else {
+                return $user;
+            }
+        }
     }
 
     /**

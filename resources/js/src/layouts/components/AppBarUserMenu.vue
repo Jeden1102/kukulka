@@ -54,9 +54,9 @@ import router from '../../router'
 export default {
   setup() {
     const userStore = useUserStore();
-    function logout(){
-      localStorage.removeItem('user')
-      router.push({name:'pages-login'})
+    function logout() {
+      localStorage.removeItem('kukulka_user')
+      router.push({ name: 'pages-login' })
     }
     return {
       userStore,

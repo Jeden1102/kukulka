@@ -5,14 +5,8 @@
         <!-- logo -->
         <v-card-title class="d-flex align-center justify-center py-7">
           <router-link to="/" class="d-flex align-center">
-            <v-img
-              :src="require('@/assets/images/logos/logo.svg').default"
-              max-height="30px"
-              max-width="30px"
-              alt="logo"
-              contain
-              class="me-3"
-            ></v-img>
+            <v-img :src="require('@/assets/images/logos/logo.svg').default" max-height="30px" max-width="30px"
+              alt="logo" contain class="me-3"></v-img>
 
             <h2 class="text-2xl font-weight-semibold">Materio</h2>
           </router-link>
@@ -27,25 +21,12 @@
         <!-- login form -->
         <v-card-text>
           <v-form>
-            <v-text-field
-              v-model="email"
-              outlined
-              label="Email"
-              placeholder="john@example.com"
-              hide-details
-              class="mb-3"
-            ></v-text-field>
+            <v-text-field v-model="email" outlined label="Email" placeholder="john@example.com" hide-details
+              class="mb-3"></v-text-field>
 
-            <v-text-field
-              v-model="password"
-              outlined
-              :type="isPasswordVisible ? 'text' : 'password'"
-              label="Password"
-              placeholder="············"
-              :append-icon="isPasswordVisible ? icons.mdiEyeOffOutline : icons.mdiEyeOutline"
-              hide-details
-              @click:append="isPasswordVisible = !isPasswordVisible"
-            ></v-text-field>
+            <v-text-field v-model="password" outlined :type="isPasswordVisible ? 'text' : 'password'" label="Password"
+              placeholder="············" :append-icon="isPasswordVisible ? icons.mdiEyeOffOutline : icons.mdiEyeOutline"
+              hide-details @click:append="isPasswordVisible = !isPasswordVisible"></v-text-field>
 
             <div class="d-flex align-center justify-space-between flex-wrap">
               <v-checkbox label="Remember Me" hide-details class="me-3 mt-1"> </v-checkbox>
@@ -64,8 +45,8 @@
           <router-link :to="{ name: 'pages-register' }"> Create an account </router-link>
         </v-card-text>
         <VAlert v-if="error" color="warning">
-      {{ error }}
-    </VAlert>
+          {{ error }}
+        </VAlert>
         <!-- divider 
         <v-card-text class="d-flex align-center mt-2">
           <v-divider></v-divider>
@@ -85,22 +66,15 @@
     </div>
 
     <!-- background triangle shape  -->
-    <img
-      class="auth-mask-bg"
-      height="173"
-      :src="require(`@/assets/images/misc/mask-${$vuetify.theme.dark ? 'dark' : 'light'}.png`).default"
-    />
+    <img class="auth-mask-bg" height="173"
+      :src="require(`@/assets/images/misc/mask-${$vuetify.theme.dark ? 'dark' : 'light'}.png`).default" />
 
     <!-- tree -->
     <v-img class="auth-tree" width="247" height="185" :src="require('@/assets/images/misc/tree.png').default"></v-img>
 
     <!-- tree  -->
-    <v-img
-      class="auth-tree-3"
-      width="377"
-      height="289"
-      :src="require('@/assets/images/misc/tree-3.png').default"
-    ></v-img>
+    <v-img class="auth-tree-3" width="377" height="289"
+      :src="require('@/assets/images/misc/tree-3.png').default"></v-img>
   </div>
 </template>
 
@@ -121,21 +95,21 @@ export default {
     async function loginUser() {
       this.processing = true
       const user = {
-        email:email.value,
-        password:password.value,
+        email: email.value,
+        password: password.value,
       }
-      if(!email.value || !password.value){
+      if (!email.value || !password.value) {
         error.value = "Uzupełnij wszystkie pola!";
         return;
       }
-      axios.post('/api/login', user).then(res=>{
-        const data= res.data;
+      axios.post('/api/login', user).then(res => {
+        const data = res.data;
         error.value = '';
         userStore.user = data.user
-        localStorage.removeItem('user')
-        localStorage.setItem('user', data.token)
+        localStorage.removeItem('kukulka_user')
+        localStorage.setItem('kukulka_user', data.token)
         document.location.href = '/';
-      }).catch(err=>{
+      }).catch(err => {
         error.value = err.response.data;
         this.processing = false
       })

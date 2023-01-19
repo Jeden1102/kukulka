@@ -18,6 +18,7 @@
     "@vuetify/cli-plugin-utils": "^0.0.9",
     "apexcharts-clevision": "^3.28.3",
     "core-js": "^3.6.5",
+    "laravel-vue-pagination": "^4.0.0",
     "pinia": "^2.0.28",
     "vue": "^2.6.11",
     "vue-apexcharts": "^1.6.2",

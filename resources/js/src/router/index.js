@@ -61,19 +61,35 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
     if (to.name === 'pages-login' || to.name === 'pages-register') {
-        if (localStorage.getItem('user') != null) {
-            router.push({ name: 'dashboard' })
+        if (localStorage.getItem('kukulka_user') != null) {
+            axios.post('/api/auth', { remember_token: localStorage.getItem('kukulka_user') }).then(res => {
+                if (res.data.length > 0) {
+                    useUserStore().user = res.data
+                    next();
+                } else {
+                    localStorage.removeItem('kukulka_user')
+                    router.push({ name: 'pages-login' })
+                }
+            }).catch(err => {
+                next()
+            })
         }
     }
     if (to.name === 'dashboard' || to.name === 'users') {
-        if (localStorage.getItem('user') == null) {
+        if (localStorage.getItem('kukulka_user') == null) {
             router.push({ name: 'pages-login' })
         }
-        axios.post('/api/auth', { remember_token: localStorage.getItem('user') }).then(res => {
+        axios.post('/api/auth', { remember_token: localStorage.getItem('kukulka_user') }).then(res => {
+            if (to.name === 'users') {
+                if (!res.data[0].root) {
+                    router.push({ name: 'dashboard' })
+                }
+            }
             if (res.data.length > 0) {
                 useUserStore().user = res.data
                 next();
             } else {
+                localStorage.removeItem('kukulka_user')
                 router.push({ name: 'pages-login' })
             }
         }).catch(err => {

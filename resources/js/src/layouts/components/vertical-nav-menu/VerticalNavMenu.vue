@@ -15,7 +15,8 @@
     <!-- Navigation Items -->
     <v-list expand shaped class="vertical-nav-menu-items pr-5">
       <nav-menu-link title="Orders" :to="{ name: 'dashboard' }" :icon="icons.mdiHomeOutline"></nav-menu-link>
-      <nav-menu-link title="Users" :to="{ name: 'users' }" :icon="icons.mdiAccountCogOutline"></nav-menu-link>
+      <nav-menu-link v-if="userStore.user[0].root" title="Users" :to="{ name: 'users' }"
+        :icon="icons.mdiAccountCogOutline"></nav-menu-link>
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -35,6 +36,7 @@ import {
 import NavMenuSectionTitle from './components/NavMenuSectionTitle.vue'
 import NavMenuGroup from './components/NavMenuGroup.vue'
 import NavMenuLink from './components/NavMenuLink.vue'
+import { useUserStore } from '../../../store/user';
 
 export default {
   components: {
@@ -49,7 +51,9 @@ export default {
     },
   },
   setup() {
+    const userStore = useUserStore()
     return {
+      userStore,
       icons: {
         mdiHomeOutline,
         mdiAlphaTBoxOutline,

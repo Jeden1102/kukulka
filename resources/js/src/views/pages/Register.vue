@@ -24,12 +24,13 @@
             <v-text-field v-model="username" required outlined label="Username" placeholder="JohnDoe" hide-details
               class="mb-3"></v-text-field>
 
-            <v-text-field type="email" required v-model="email" outlined label="Email" placeholder="john@example.com" hide-details
-              class="mb-3"></v-text-field>
+            <v-text-field type="email" required v-model="email" outlined label="Email" placeholder="john@example.com"
+              hide-details class="mb-3"></v-text-field>
 
-            <v-text-field  required v-model="password" outlined :type="isPasswordVisible ? 'text' : 'password'" label="Password"
-              placeholder="············" :append-icon="isPasswordVisible ? icons.mdiEyeOffOutline : icons.mdiEyeOutline"
-              hide-details @click:append="isPasswordVisible = !isPasswordVisible"></v-text-field>
+            <v-text-field required v-model="password" outlined :type="isPasswordVisible ? 'text' : 'password'"
+              label="Password" placeholder="············"
+              :append-icon="isPasswordVisible ? icons.mdiEyeOffOutline : icons.mdiEyeOutline" hide-details
+              @click:append="isPasswordVisible = !isPasswordVisible"></v-text-field>
 
             <v-checkbox hide-details class="mt-1">
               <template #label>
@@ -39,13 +40,13 @@
               </template>
             </v-checkbox>
 
-            <v-btn type="submit"  block color="primary" class="mt-6"> Sign Up </v-btn>
+            <v-btn type="submit" block color="primary" class="mt-6"> Sign Up </v-btn>
           </v-form>
         </v-card-text>
-        
-    <VAlert v-if="error" color="warning">
-      {{ error }}
-    </VAlert>
+
+        <VAlert v-if="error" color="warning">
+          {{ error }}
+        </VAlert>
         <!-- create new account  -->
         <v-card-text class="d-flex align-center justify-center flex-wrap mt-2">
           <span class="me-2"> Already have an account? </span>
@@ -96,25 +97,24 @@ export default {
     const email = ref('')
     const password = ref('')
     const error = ref('')
-    const userStore= useUserStore()
+    const userStore = useUserStore()
     async function registerUser() {
       this.processing = true
       const user = {
-        name:username.value,
-        email:email.value,
-        password:password.value,
+        name: username.value,
+        email: email.value,
+        password: password.value,
       }
-      if(!username.value || !email.value || !password.value){
+      if (!username.value || !email.value || !password.value) {
         error.value = "Uzupełnij wszystkie pola!";
         return;
       }
-      axios.post('/api/register', user).then(res=>{
+      axios.post('/api/register', user).then(res => {
         error.value = '';
         userStore.user = res.data.user
-        localStorage.removeItem('user')
-        localStorage.setItem('user', res.data.token)
-        document.location.href = '/';
-      }).catch(err=>{
+        localStorage.removeItem('kukulka_user')
+        error.value = "Konto zostało założone i czeka na aktywcę ze strony administratora.";
+      }).catch(err => {
         error.value = err.response.data;
         this.processing = false
       })
@@ -138,7 +138,8 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@resources/sass/preset/pages/auth.scss';
-.v-alert__content{
-  color:white !important;
+
+.v-alert__content {
+  color: white !important;
 }
 </style>
