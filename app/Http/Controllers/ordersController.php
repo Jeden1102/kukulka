@@ -12,8 +12,17 @@ class ordersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $req)
     {
+        if ($req->status && $req->startDate && $req->endDate) {
+            $mapStatus = [
+                'Add' => 'date_add',
+                'Confirmed' => 'date_confirmed',
+                'In status' => 'date_in_status',
+            ];
+            $orders = order::where($mapStatus[$req->status], ">", $req->startDate)->where($mapStatus[$req->status], "<", $req->endDate)->paginate(10);
+            return response()->json($orders);
+        }
         $orders = order::paginate(10);
         return response()->json($orders);
     }

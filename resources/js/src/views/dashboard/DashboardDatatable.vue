@@ -8,24 +8,65 @@
             <th>Source</th>
             <th>Name</th>
             <th>E-mail</th>
+            <th>Login</th>
+            <th>Phone</th>
+            <th>Payment</th>
+            <th>Delivery</th>
+            <th>Invoice</th>
             <th>Confirmed</th>
             <th>Add</th>
             <th>In status</th>
-            <th>Created</th>
-            <th>Updated</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="order in ordersStore.orders">
-            <td>{{ order.order_id }}</td>
+            <td>{{ order.order_id }} <div v-if="order.confirmed">
+                <VChip small class="font-weight-medium" label color="success">
+                  Confirmed
+                </VChip>
+              </div>
+              <div v-else>
+                <VChip small class="font-weight-medium" label color="error">
+                  Not confirmed
+                </VChip>
+              </div>
+            </td>
             <td>{{ order.order_source }}</td>
             <td>{{ order.delivery_fullname }}</td>
             <td>{{ order.email }}</td>
+            <td>{{ order.user_login ? order.user_login : '---' }}</td>
+            <td>{{ order.phone }}</td>
+            <td>{{ order.currency }} - {{ order.payment_method }}</td>
+            <td>
+              <VBtn small @click="showDeliveryDetails(order.order_id)" color="info">
+                <span>
+                  Show details
+                </span>
+              </VBtn>
+              <div v-if="deliveryToggled && deliveryToggled == order.order_id">
+                <p>{{ order.delivery_address }}</p>
+                <p>{{ order.delivery_city }}</p>
+                <p>{{ order.delivery_postcode }}</p>
+                <p>{{ order.delivery_country_code }} - {{ order.delivery_country }}</p>
+              </div>
+            </td>
+            <td>
+              <VBtn small @click="showInvoiceDetails(order.order_id)" color="info">
+                <span>
+                  Show details
+                </span>
+              </VBtn>
+              <div v-if="invoiceToggled && invoiceToggled == order.order_id">
+                <p>{{ order.invoice_address }}</p>
+                <p>{{ order.invoice_city }}</p>
+                <p>{{ order.invoice_postcode }}</p>
+                <p>{{ order.invoice_country_code }} - {{ order.invoice_country }}</p>
+                <p>{{ order.invoice_company }} - {{ order.invoice_nip }}</p>
+              </div>
+            </td>
             <td>{{ formatDate(order.date_confirmed, true) }}</td>
             <td>{{ formatDate(order.date_add, true) }}</td>
             <td>{{ formatDate(order.date_in_status, true) }}</td>
-            <td>{{ formatDate(order.created_at, false) }}</td>
-            <td>{{ formatDate(order.updated_at, false) }}</td>
           </tr>
         </tbody>
 
@@ -39,21 +80,36 @@
 <script>
 import { mdiSquareEditOutline, mdiDotsVertical } from '@mdi/js'
 import { useOrdersStore } from '../../store/orders'
-import { onMounted, watch } from 'vue-demi'
-
+import { onMounted, watch, ref } from 'vue-demi'
 export default {
   setup() {
     const ordersStore = useOrdersStore()
+    const deliveryToggled = ref(null);
+    const invoiceToggled = ref(null);
     const statusColor = {
       0: 'success',
       1: 'error',
     }
     function formatDate(date, unix) {
       const newDate = new Date(unix ? date * 1000 : date);
-      const month = newDate.toLocaleString('default', { month: 'short' });
-      const day = newDate.getDay();
+      const month = newDate.getMonth() + 1;
+      const day = newDate.getDate();
       const year = newDate.getFullYear();
-      return `${day} ${month} ${year}`
+      return `${day}-${month}-${year}`
+    }
+    function showDeliveryDetails(id) {
+      if (deliveryToggled.value === id) {
+        deliveryToggled.value = null;
+        return;
+      }
+      deliveryToggled.value = id;
+    }
+    function showInvoiceDetails(id) {
+      if (invoiceToggled.value === id) {
+        invoiceToggled.value = null;
+        return;
+      }
+      invoiceToggled.value = id;
     }
 
     watch(() => ordersStore.current_page, (n) => console.log(ordersStore.getOrders(n)));
@@ -69,6 +125,10 @@ export default {
       },
       statusColor,
       ordersStore,
+      showDeliveryDetails,
+      deliveryToggled,
+      showInvoiceDetails,
+      invoiceToggled,
       formatDate,
       // icons
       icons: {
@@ -79,7 +139,7 @@ export default {
   },
 }
 </script>
-<style>
+<style lang="scss">
 .table-wrapper {
   overflow-x: scroll;
 }
@@ -104,6 +164,11 @@ export default {
 .styled-table th,
 .styled-table td {
   padding: 12px 15px;
+  max-width: 180px;
+
+  p {
+    margin: 0;
+  }
 }
 
 .styled-table tbody tr {
