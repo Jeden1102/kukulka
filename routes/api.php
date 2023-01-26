@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ordersController;
+use App\Http\Controllers\statusController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -36,3 +37,7 @@ Route::delete('/user/{id}', [UserController::class, 'destroy']);
 
 //ORDERS
 Route::get('/orders', [ordersController::class, 'index']);
+
+//STATUS
+
+Route::get('/status', [statusController::class, 'index']);

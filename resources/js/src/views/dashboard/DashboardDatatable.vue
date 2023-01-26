@@ -16,6 +16,7 @@
             <th>Confirmed</th>
             <th>Add</th>
             <th>In status</th>
+            <th>Statuses</th>
           </tr>
         </thead>
         <tbody>
@@ -67,6 +68,20 @@
             <td>{{ formatDate(order.date_confirmed, true) }}</td>
             <td>{{ formatDate(order.date_add, true) }}</td>
             <td>{{ formatDate(order.date_in_status, true) }}</td>
+            <td>
+              Current : {{ order.name ? order.name : '---' }}
+              <VBtn v-if="order.name && expandedId != order.order_id" small @click="getStatuses(order.order_id)"
+                color="info">
+                <span>
+                  Load all
+                </span>
+              </VBtn>
+              <div v-if="order.order_id == expandedId">
+                <div v-for="status in expandedStatuses" :key="status.id">
+                  <p>{{ status.name }} -{{ status.created_at }}</p>
+                </div>
+              </div>
+            </td>
           </tr>
         </tbody>
 
@@ -81,11 +96,14 @@
 import { mdiSquareEditOutline, mdiDotsVertical } from '@mdi/js'
 import { useOrdersStore } from '../../store/orders'
 import { onMounted, watch, ref } from 'vue-demi'
+import axios from 'axios';
 export default {
   setup() {
     const ordersStore = useOrdersStore()
     const deliveryToggled = ref(null);
     const invoiceToggled = ref(null);
+    const expandedStatuses = ref(null);
+    const expandedId = ref(null);
     const statusColor = {
       0: 'success',
       1: 'error',
@@ -112,6 +130,16 @@ export default {
       invoiceToggled.value = id;
     }
 
+    async function getStatuses(order_id) {
+      try {
+        const response = await axios.get(`/api/status?order_id=${order_id}`);
+        this.expandedStatuses = response.data
+        this.expandedId = order_id
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
     watch(() => ordersStore.current_page, (n) => console.log(ordersStore.getOrders(n)));
 
     onMounted(() => {
@@ -127,9 +155,12 @@ export default {
       ordersStore,
       showDeliveryDetails,
       deliveryToggled,
+      expandedId,
       showInvoiceDetails,
       invoiceToggled,
       formatDate,
+      getStatuses,
+      expandedStatuses,
       // icons
       icons: {
         mdiSquareEditOutline,
