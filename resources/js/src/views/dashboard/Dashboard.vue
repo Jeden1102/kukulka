@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+import { onMounted, ref } from 'vue-demi'
 
 import { useUserStore } from '../../store/user';
 import { useOrdersStore } from '../../store/orders';
@@ -40,11 +42,7 @@ export default {
   setup() {
     const userStore = useUserStore();
     const ordersStore = useOrdersStore();
-    const statuses = [
-      'Confirmed',
-      'Add',
-      'In status',
-    ]
+    const statuses = ref([])
     function updateValues() {
       console.log(ordersStore)
     }
@@ -59,6 +57,19 @@ export default {
       ordersStore.getOrders()
       console.log("ok")
     }
+    function getStatuses() {
+      axios.get('/api/status/all').then(res => {
+
+        let values = res.data.map(obj => obj.name);
+        statuses.value = values;
+        console.log(values)
+      }).catch(err => {
+        console.log(err)
+      })
+    }
+    onMounted(() => {
+      getStatuses()
+    })
     return {
       userStore,
       updateValues,

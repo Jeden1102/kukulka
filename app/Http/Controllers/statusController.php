@@ -17,6 +17,12 @@ class statusController extends Controller
         return status::all()->where('order_id', "=", $request->order_id);
     }
 
+
+    public function all()
+    {
+        return Status::select('name')->distinct()->get();
+    }
+
     /**
      * Show the form for creating a new resource.
      *

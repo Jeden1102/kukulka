@@ -41,3 +41,4 @@ Route::get('/orders', [ordersController::class, 'index']);
 //STATUS
 
 Route::get('/status', [statusController::class, 'index']);
+Route::get('/status/all', [statusController::class, 'all']);

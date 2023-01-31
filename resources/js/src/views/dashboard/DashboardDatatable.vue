@@ -10,13 +10,12 @@
             <th>E-mail</th>
             <th>Login</th>
             <th>Phone</th>
-            <th>Payment</th>
             <th>Delivery</th>
             <th>Invoice</th>
             <th>Confirmed</th>
             <th>Add</th>
             <th>In status</th>
-            <th>Statuses</th>
+            <th class="statuses">Statuses</th>
           </tr>
         </thead>
         <tbody>
@@ -37,7 +36,6 @@
             <td>{{ order.email }}</td>
             <td>{{ order.user_login ? order.user_login : '---' }}</td>
             <td>{{ order.phone }}</td>
-            <td>{{ order.currency }} - {{ order.payment_method }}</td>
             <td>
               <VBtn small @click="showDeliveryDetails(order.order_id)" color="info">
                 <span>
@@ -77,9 +75,16 @@
                 </span>
               </VBtn>
               <div v-if="order.order_id == expandedId">
-                <div v-for="status in expandedStatuses" :key="status.id">
-                  <p>{{ status.name }} -{{ status.created_at }}</p>
-                </div>
+                <table class="table-min">
+                  <th>
+                  <td>Status</td>
+                  <td>Data</td>
+                  </th>
+                  <tr v-for="status in expandedStatuses" :key="status.id">
+                    <td>{{ status.name }}</td>
+                    <td>{{ formatDate(status.created_at, false) }}</td>
+                  </tr>
+                </table>
               </div>
             </td>
           </tr>
@@ -202,6 +207,10 @@ export default {
   }
 }
 
+.styled-table th.statuses {
+  min-width: 300px;
+}
+
 .styled-table tbody tr {
   border-bottom: 1px solid #dddddd;
 }
@@ -217,5 +226,15 @@ export default {
 .user-actions {
   display: flex;
   gap: 8px;
+}
+
+.styled-table {
+  .table-min {
+
+    th,
+    td {
+      padding: 6px 7px;
+    }
+  }
 }
 </style>
