@@ -12,10 +12,9 @@
             <th>Phone</th>
             <th>Delivery</th>
             <th>Invoice</th>
-            <th>Confirmed</th>
-            <th>Add</th>
-            <th>In status</th>
             <th class="statuses">Statuses</th>
+            <th>Add</th>
+            <th>Confirmed</th>
           </tr>
         </thead>
         <tbody>
@@ -63,11 +62,8 @@
                 <p>{{ order.invoice_company }} - {{ order.invoice_nip }}</p>
               </div>
             </td>
-            <td>{{ formatDate(order.date_confirmed, true) }}</td>
-            <td>{{ formatDate(order.date_add, true) }}</td>
-            <td>{{ formatDate(order.date_in_status, true) }}</td>
             <td>
-              Current : {{ order.name ? order.name : '---' }}
+              Current : {{ order.name ? order.name : '---' }} </br>
               <VBtn v-if="order.name && expandedId != order.order_id" small @click="getStatuses(order.order_id)"
                 color="info">
                 <span>
@@ -86,6 +82,11 @@
                   </tr>
                 </table>
               </div>
+            </td>
+            <td></td>
+            <td>{{ formatDate(order.date_add, true) }}</td>
+            <td>
+              {{ formatDate(order.date_confirmed, true) }}
             </td>
           </tr>
         </tbody>

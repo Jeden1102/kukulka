@@ -34,7 +34,7 @@ class ordersController extends Controller
             $toTimestamp = Carbon::createFromTimestamp($req->endDate / 1000);
             $toDate = $toTimestamp->format('Y-m-d H:i:s');
             $orders = order::select('orders.*', 'status.*')
-                ->leftJoin('status', function ($join) {
+                ->join('status', function ($join) {
                     $join->on('status.order_id', '=', 'orders.order_id');
                 })->where('status.name', '=', $req->status)->where('status.created_at', ">", $fromDate)->where('status.created_at', "<", $toDate)
                 ->orderBy('status.created_at')
@@ -55,7 +55,7 @@ class ordersController extends Controller
 
         $orders = order::select('orders.*', 'status.*')
             ->distinct()
-            ->leftJoin('status', function ($join) {
+            ->join('status', function ($join) {
                 $join->on('status.order_id', '=', 'orders.order_id')
                     ->on('status.created_at', '=', DB::raw('(SELECT MAX(created_at) FROM status WHERE order_id = orders.order_id)'));
             })
