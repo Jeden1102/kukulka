@@ -7,8 +7,8 @@ export const useOrdersStore = defineStore('orders', {
         last_page: 0,
         filters: {
             date: {
-                startDate: null,
-                endDate: null
+                startDate: Date.now() - 604800000,
+                endDate: Date.now()
             },
             status: null
         }
