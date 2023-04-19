@@ -7,7 +7,7 @@
             <th>ID</th>
             <th>Source</th>
             <th>Name</th>
-            <th>E-mail</th>
+            <th>Products</th>
             <th>Login</th>
             <th>Phone</th>
             <th>Delivery</th>
@@ -32,7 +32,24 @@
             </td>
             <td>{{ order.order_source }}</td>
             <td>{{ order.delivery_fullname }}</td>
-            <td>{{ order.email }}</td>
+            <td>
+              <VBtn v-if="order.name && expandedId != order.order_id" small @click="getProducts(order.order_id)"
+                color="info">
+                <span>
+                  Load all
+                </span>
+              </VBtn>
+              <div v-if="order.order_id == expandendProductId">
+                <table class="table-min">
+                  <th>
+                  <td>Product</td>
+                  </th>
+                  <tr v-for="product in expandedProducts" :key="product.id">
+                    <td>{{ product.product_name }}</td>
+                  </tr>
+                </table>
+              </div>
+            </td>
             <td>{{ order.user_login ? order.user_login : '---' }}</td>
             <td>{{ order.phone }}</td>
             <td>
@@ -102,51 +119,67 @@
 import { mdiSquareEditOutline, mdiDotsVertical } from '@mdi/js'
 import { useOrdersStore } from '../../store/orders'
 import { onMounted, watch, ref } from 'vue-demi'
-import axios from 'axios';
+import axios from 'axios'
 export default {
   setup() {
     const ordersStore = useOrdersStore()
-    const deliveryToggled = ref(null);
-    const invoiceToggled = ref(null);
-    const expandedStatuses = ref(null);
-    const expandedId = ref(null);
+    const deliveryToggled = ref(null)
+    const invoiceToggled = ref(null)
+    const expandedStatuses = ref(null)
+    const expandedId = ref(null)
+    const expandedProducts = ref(null)
+    const expandendProductId = ref(null)
     const statusColor = {
       0: 'success',
       1: 'error',
     }
     function formatDate(date, unix) {
-      const newDate = new Date(unix ? date * 1000 : date);
-      const month = newDate.getMonth() + 1;
-      const day = newDate.getDate();
-      const year = newDate.getFullYear();
+      const newDate = new Date(unix ? date * 1000 : date)
+      const month = newDate.getMonth() + 1
+      const day = newDate.getDate()
+      const year = newDate.getFullYear()
       return `${day}-${month}-${year}`
     }
     function showDeliveryDetails(id) {
       if (deliveryToggled.value === id) {
-        deliveryToggled.value = null;
-        return;
+        deliveryToggled.value = null
+        return
       }
-      deliveryToggled.value = id;
+      deliveryToggled.value = id
     }
     function showInvoiceDetails(id) {
       if (invoiceToggled.value === id) {
-        invoiceToggled.value = null;
-        return;
+        invoiceToggled.value = null
+        return
       }
-      invoiceToggled.value = id;
+      invoiceToggled.value = id
     }
 
     async function getStatuses(order_id) {
       try {
-        const response = await axios.get(`/api/status?order_id=${order_id}`);
+        const response = await axios.get(`/api/status?order_id=${order_id}`)
         this.expandedStatuses = response.data
         this.expandedId = order_id
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
     }
 
-    watch(() => ordersStore.current_page, (n) => console.log(ordersStore.getOrders(n)));
+    async function getProducts(order_id) {
+      try {
+        const response = await axios.get(`/api/products?order_id=${order_id}`)
+        console.log(response)
+        this.expandedProducts = response.data
+        this.expandendProductId = order_id
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    watch(
+      () => ordersStore.current_page,
+      n => console.log(ordersStore.getOrders(n)),
+    )
 
     onMounted(() => {
       ordersStore.getOrders(1)
@@ -166,7 +199,10 @@ export default {
       invoiceToggled,
       formatDate,
       getStatuses,
+      getProducts,
       expandedStatuses,
+      expandedProducts,
+      expandendProductId,
       // icons
       icons: {
         mdiSquareEditOutline,
@@ -231,7 +267,6 @@ export default {
 
 .styled-table {
   .table-min {
-
     th,
     td {
       padding: 6px 7px;

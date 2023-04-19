@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\status;
+use App\Models\ProductsOrder;
 
 class statusController extends Controller
 {
@@ -16,6 +17,17 @@ class statusController extends Controller
     {
         return status::all()->where('order_id', "=", $request->order_id);
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getProducts(Request $request)
+    {
+        return ProductsOrder::all()->where('order_id', "=", $request->order_id);
+    }
+
 
 
     public function all()

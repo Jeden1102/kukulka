@@ -42,3 +42,5 @@ Route::get('/orders', [ordersController::class, 'index']);
 
 Route::get('/status', [statusController::class, 'index']);
 Route::get('/status/all', [statusController::class, 'all']);
+
+Route::get('/products', [statusController::class, 'getProducts']);

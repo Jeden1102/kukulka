@@ -29,10 +29,16 @@ class ordersController extends Controller
             //         ->whereRaw('status.id = (SELECT id FROM status WHERE order_id = orders.order_id ORDER BY created_at DESC LIMIT 1)');
             // })
             //     ->select('orders.*', 'status.*')->orderBy('status.created_at', 'asc')->paginate(10);
+            $higher = 0;
+            if ($req->startDate === $req->endDate) {
+                $higher = 86400000;
+            }
             $fromTimestamp = Carbon::createFromTimestamp($req->startDate / 1000);
+            $toTimestamp = Carbon::createFromTimestamp(($req->endDate + 86400000) / 1000);
+
             $fromDate = $fromTimestamp->format('Y-m-d H:i:s');
-            $toTimestamp = Carbon::createFromTimestamp($req->endDate / 1000);
             $toDate = $toTimestamp->format('Y-m-d H:i:s');
+
             $orders = order::select('orders.*', 'status.*')
                 ->join('status', function ($join) {
                     $join->on('status.order_id', '=', 'orders.order_id');
